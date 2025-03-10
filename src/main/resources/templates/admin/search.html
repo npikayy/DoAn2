@@ -15,7 +15,7 @@
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Tìm kiếm Bài hát</h1>
-    <a href="/api/songs" class="btn btn-secondary mb-3">Quay lại danh sách bài hát</a>
+    <a href="/admin/songs_management" class="btn btn-secondary mb-3">Quay lại danh sách bài hát</a>
     <div>
         <div class="btn-group btn-group-custom mb-1" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-secondary" onclick="setSearchType('name')">Tên bài hát</button>
@@ -48,10 +48,10 @@
                     </div>
                     <div class="card-footer bg-transparent">
                         <div class="btn-group d-flex" role="group">
-                            <a class="btn btn-primary" th:href="@{/api/songs/updateSong(songId=${song.songId})}">
+                            <a class="btn btn-primary" th:href="@{/admin/songs_management/updateSong(songId=${song.songId})}">
                                 <i class="fas fa-edit"></i> Sửa
                             </a>
-                            <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bài hát này?');" th:href="@{/api/songs/deleteSong(songId=${song.songId})}">
+                            <a class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bài hát này?');" th:href="@{/admin/songs_management/deleteSong(songId=${song.songId})}">
                                 <i class="fas fa-trash-alt"></i> Xóa
                             </a>
                         </div>

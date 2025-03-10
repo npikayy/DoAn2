@@ -34,4 +34,10 @@ public class userController {
         modelAndView.setViewName("login");
         return modelAndView;
     }
+    @GetMapping("admin/user_management")
+    public ModelAndView user_management(ModelAndView modelAndView) {
+        modelAndView.setViewName("admin/user_management");
+        modelAndView.addObject("users", userService.getAllUsers());
+        return modelAndView;
+    }
 }

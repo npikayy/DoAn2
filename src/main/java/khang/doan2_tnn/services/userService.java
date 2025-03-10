@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class userService implements UserDetailsService {
@@ -27,6 +29,10 @@ public class userService implements UserDetailsService {
                 .userPicUrl("/UserDefaultAvatar.png")
                .build();
         userRepository.save(user);
+    }
+
+    public List<users> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override

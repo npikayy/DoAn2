@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/songs")
+@RequestMapping("/admin/songs_management")
 public class songController {
     @Autowired
     private songService songService;
@@ -38,27 +38,27 @@ public class songController {
         modelAndView.addObject("songs",songs);
         return modelAndView;
     }
-    @GetMapping("/getSongs")
-    public apiResponse<List<songs>> getAllSongs() {
-        return apiResponse.<List<songs>>builder()
-               .message("success")
-               .result(songService.findAll())
-                .build();
-    }
+//    @GetMapping("admin/getSongs")
+//    public apiResponse<List<songs>> getAllSongs() {
+//        return apiResponse.<List<songs>>builder()
+//               .message("success")
+//               .result(songService.findAll())
+//                .build();
+//    }
 
     @GetMapping()
     public ModelAndView page(ModelAndView modelAndView){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = null;
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            username = userDetails.getUsername();
-        }
-        users user = userRepository.findByUsername(username);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = null;
+//
+//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//            username = userDetails.getUsername();
+//        }
+//        users user = userRepository.findByUsername(username);
         modelAndView.setViewName("admin/page");
         modelAndView.addObject("song",songService.findAll());
-        modelAndView.addObject("user",user);
+//        modelAndView.addObject("user",user);
         return modelAndView;
     }
     @GetMapping("/addSong")
@@ -76,7 +76,7 @@ public class songController {
                                 MultipartFile coverImage)
     {
         songService.uploadMusic(musicFile, coverImage, songName, artist, album, genre, releaseDate);
-        return new ModelAndView("redirect:/api/songs");
+        return new ModelAndView("redirect:/admin/songs_management");
     }
     @GetMapping("/updateSong")
     public ModelAndView updateSong(ModelAndView modelAndView, @RequestParam String songId) {
@@ -96,12 +96,12 @@ public class songController {
                                    LocalDate releaseDate,
                                    String duration) throws IOException {
         songService.updateMusic(musicFile, coverImage, Long.parseLong(songId), songName, artist, album, genre, releaseDate);
-        return new ModelAndView("redirect:/api/songs");
+        return new ModelAndView("redirect:/admin/songs_management");
     }
-    @GetMapping("deleteSong")
+    @GetMapping("/deleteSong")
     public ModelAndView deleteSong(@RequestParam String songId)
     {
         songService.deleteById(Long.parseLong(songId));
-        return new ModelAndView("redirect:/api/songs");
+        return new ModelAndView("redirect:/admin/songs_management");
     }
 }
