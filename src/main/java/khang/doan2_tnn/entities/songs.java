@@ -1,15 +1,14 @@
 package khang.doan2_tnn.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
 @Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,11 +17,22 @@ public class songs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long songId;
+    @Column(columnDefinition = "nvarchar(255)")
     String songName;
+    @Column(columnDefinition = "nvarchar(255)")
     String artist;
+    @Column(columnDefinition = "nvarchar(255)")
     String album;
+    @Column(columnDefinition = "nvarchar(255)")
     String genre;
-    LocalDate release_date;
+    @Column(columnDefinition = "Date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate releaseDate;
     String duration;
-    String path;
+    @Column(columnDefinition = "nvarchar(255)")
+    String songPicUrl;
+    @Column(columnDefinition = "nvarchar(255)")
+    String SongUrl;
+
+
 }

@@ -1,9 +1,6 @@
 package khang.doan2_tnn.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +16,6 @@ public class genres {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long genreId;
+    @Column(columnDefinition = "nvarchar(255)")
     String genreName;
 }

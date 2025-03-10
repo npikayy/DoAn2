@@ -15,6 +15,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class favoriteSongs {
     @Id
-    Long userId;
+    String userId;
     Long songId;
 }

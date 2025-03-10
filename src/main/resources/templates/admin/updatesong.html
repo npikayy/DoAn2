@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa thông tin bài hát mới</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Sửa thông tin bài hát</h1>
+    <a href="/api/songs" class="btn btn-secondary mb-3">Quay lại danh sách bài hát</a>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="songName">Tên bài hát:</label>
+            <input type="text" class="form-control" id="songName" name="songName" required
+                   th:value="${song.songName}">
+        </div>
+
+        <div class="form-group">
+            <label for="artist">Ca sĩ:</label>
+            <input type="text" class="form-control" id="artist" name="artist" required
+                   th:value="${song.artist}">
+        </div>
+
+        <div class="form-group">
+            <label for="album">Album:</label>
+            <input type="text" class="form-control" id="album" name="album"
+                   th:value="${song.album}">
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Thể loại:</label>
+            <input type="text" class="form-control" id="genre" name="genre"
+                   th:value="${song.genre}">
+        </div>
+
+        <div class="form-group">
+            <label for="releaseDate">Ngày phát hành:</label>
+            <input type="date" class="form-control" id="releaseDate" name="releaseDate"
+                   th:value="${song.releaseDate}">
+        </div>
+
+        <div class="form-group">
+            <label for="musicFile">Tệp nhạc:</label>
+            <input type="file" class="form-control-file" id="musicFile" name="musicFile"
+                   accept="audio/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="coverImage">Ảnh bìa:</label>
+            <input type="file" class="form-control-file" id="coverImage" name="coverImage"
+                   accept="image/*" onchange="previewImage(event)">
+        </div>
+
+        <div class="form-group">
+            <label>Ảnh bìa xem trước:</label>
+            <br>
+            <img id="coverImagePreview" class="img-thumbnail" style="display:none;" alt="ảnh bìa xem trước" width="200" height="200">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật thông tin bài hát</button>
+    </form>
+</div>
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('coverImagePreview');
+            output.src = reader.result;    // Đặt URL ảnh từ nội dung tệp đã đọc
+            output.style.display = 'block';  // Hiển thị element ảnh
+        };
+        reader.readAsDataURL(event.target.files[0]); // Đọc tệp đầu tiên được chọn
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

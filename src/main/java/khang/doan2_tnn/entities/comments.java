@@ -1,9 +1,6 @@
 package khang.doan2_tnn.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +18,10 @@ public class comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long commentId;
+    @Column(columnDefinition = "nvarchar(255)")
     String commentContent;
-    Long user_id;
-    Long song_id;
+    String userId;
+    Long songId;
+    @Column(columnDefinition = "Date")
     LocalDate commentDate;
 }
