@@ -30,6 +30,8 @@ public class songs {
     LocalDate releaseDate;
     String duration;
     @Column(columnDefinition = "nvarchar(255)")
+    String addedBy;
+    @Column(columnDefinition = "nvarchar(255)")
     String songPicUrl;
     @Column(columnDefinition = "nvarchar(255)")
     String SongUrl;

@@ -27,7 +27,13 @@
             <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
                 <form action="/login" method="post">
                     <h3 class="text-center mb-4">Đăng Nhập</h3>
-
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.5rem; height: 1.5rem; margin-right: 0.5rem;" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zm.93-6.481c.287-.14.569.106.637.47l.007.09-.002 3.01c0 .36-.268.65-.637.732l-.09.007a.548.548 0 0 1-.538-.641l.002-3.01c0-.36.268-.65.637-.732z"/>
+                        </svg>
+                    <span th:text="${errorMessage}"></span>
+                    </div>
                     <div data-mdb-input-init class="form-outline mb-4">
                         <input type="text" id="username" name="username" class="form-control form-control-lg" />
                         <label class="form-label" for="username">Tên tài khoản</label>

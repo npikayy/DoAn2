@@ -47,9 +47,12 @@ public class SecurityConfig {
                     httpForm
                         .loginPage("/login").permitAll()
                             .successHandler(successHandler());
+
                 })
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/login", "/register").permitAll();
+                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
+                    registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
                 })
                 .build();

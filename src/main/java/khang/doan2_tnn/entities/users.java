@@ -14,6 +14,7 @@ public class users {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String userId;
+    @Column(columnDefinition = "nvarchar(255)")
     String fullName;
     String username;
     String password;

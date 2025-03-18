@@ -7,42 +7,22 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Thêm bài hát mới</h1>
-    <a href="/admin/songs_management" class="btn btn-secondary mb-3">Quay lại danh sách bài hát</a>
+    <h1 class="text-center mb-4">Thêm nghệ sĩ mới</h1>
+    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
     <form method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="songName">Tên bài hát:</label>
-            <input type="text" class="form-control" id="songName" name="songName" required>
+            <label for="artistName">Tên nghệ sĩ:</label>
+            <input type="text" class="form-control" id="artistName" name="artistName" required>
         </div>
 
         <div class="form-group">
-            <label for="artist">Ca sĩ:</label>
-            <input type="text" class="form-control" id="artist" name="artist" required>
+            <label for="artistBio">Thông tin nghệ sĩ:</label>
+            <textarea class="form-control" id="artistBio" name="artistBio" rows="3" required></textarea>
         </div>
 
         <div class="form-group">
-            <label for="album">Album:</label>
-            <input type="text" class="form-control" id="album" name="album">
-        </div>
-
-        <div class="form-group">
-            <label for="genre">Thể loại:</label>
-            <input type="text" class="form-control" id="genre" name="genre">
-        </div>
-
-        <div class="form-group">
-            <label for="releaseDate">Ngày phát hành:</label>
-            <input type="date" class="form-control" id="releaseDate" name="releaseDate">
-        </div>
-
-        <div class="form-group">
-            <label for="musicFile">Tệp nhạc:</label>
-            <input type="file" class="form-control-file" id="musicFile" name="musicFile" accept="audio/*" required>
-        </div>
-
-        <div class="form-group">
-            <label for="coverImage">Ảnh bìa:</label>
-            <input type="file" onchange="previewImage(event)" class="form-control-file" id="coverImage" name="coverImage" accept="image/*">
+            <label for="imageFile">Ảnh bìa:</label>
+            <input type="file" onchange="previewImage(event)" class="form-control-file" id="imageFile" name="imageFile" accept="image/*">
         </div>
         <div class="form-group">
             <label>Ảnh bìa xem trước:</label>

@@ -2,7 +2,6 @@ package khang.doan2_tnn.controllers;
 
 import khang.doan2_tnn.entities.songs;
 import khang.doan2_tnn.entities.users;
-import khang.doan2_tnn.response.apiResponse;
 import khang.doan2_tnn.services.songService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +33,10 @@ public class songController {
                                                      ModelAndView modelAndView)
     {
         List<songs> songs = songService.findByNameorArtistorGenre(name, artist, genre);
-        modelAndView.setViewName("admin/search");
+        modelAndView.setViewName("/admin/song/searchPage");
         modelAndView.addObject("songs",songs);
         return modelAndView;
     }
-//    @GetMapping("admin/getSongs")
-//    public apiResponse<List<songs>> getAllSongs() {
-//        return apiResponse.<List<songs>>builder()
-//               .message("success")
-//               .result(songService.findAll())
-//                .build();
-//    }
 
     @GetMapping()
     public ModelAndView page(ModelAndView modelAndView){
@@ -56,14 +48,13 @@ public class songController {
 //            username = userDetails.getUsername();
 //        }
 //        users user = userRepository.findByUsername(username);
-        modelAndView.setViewName("admin/page");
+        modelAndView.setViewName("/admin/song/mainPage");
         modelAndView.addObject("song",songService.findAll());
-//        modelAndView.addObject("user",user);
         return modelAndView;
     }
     @GetMapping("/addSong")
     public ModelAndView addAsong(ModelAndView modelAndView){
-        modelAndView.setViewName("admin/addsong");
+        modelAndView.setViewName("/admin/song/addSong");
         return modelAndView;
     }
     @PostMapping("/addSong")
@@ -75,12 +66,20 @@ public class songController {
                                 MultipartFile musicFile,
                                 MultipartFile coverImage)
     {
-        songService.uploadMusic(musicFile, coverImage, songName, artist, album, genre, releaseDate);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        songService.uploadMusic(musicFile, coverImage, songName, artist, album, genre, releaseDate, user.getUsername());
         return new ModelAndView("redirect:/admin/songs_management");
     }
     @GetMapping("/updateSong")
     public ModelAndView updateSong(ModelAndView modelAndView, @RequestParam String songId) {
-        modelAndView.setViewName("admin/updatesong");
+        modelAndView.setViewName("/admin/song/updateSong");
         songs song = songService.findById(Long.parseLong(songId));
         modelAndView.addObject("song", song);
         return modelAndView;
@@ -93,8 +92,7 @@ public class songController {
                                    String artist,
                                    String album,
                                    String genre,
-                                   LocalDate releaseDate,
-                                   String duration) throws IOException {
+                                   LocalDate releaseDate) throws IOException {
         songService.updateMusic(musicFile, coverImage, Long.parseLong(songId), songName, artist, album, genre, releaseDate);
         return new ModelAndView("redirect:/admin/songs_management");
     }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa thông tin thể loại</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Sửa thông tin thể loại</h1>
+    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="genreName">Tên thể loại:</label>
+            <input type="text" th:value="${genre.genreName}" class="form-control" id="genreName" name="genreName" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+    </form>
+</div>
+</body>
+</html>

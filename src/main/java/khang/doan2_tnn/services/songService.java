@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,7 +52,7 @@ public class songService {
         long remainingSeconds = seconds % 60;
         return String.format("%d:%02d", minutes, remainingSeconds);
     }
-    public void uploadMusic(MultipartFile file, MultipartFile file2, String name, String artist, String album, String genre, LocalDate releaseDate) {
+    public void uploadMusic(MultipartFile file, MultipartFile file2, String name, String artist, String album, String genre, LocalDate releaseDate, String addedBy) {
 
         try {
             // Tạo thư mục lưu trữ nếu chưa tồn tại
@@ -90,6 +89,7 @@ public class songService {
                     .genre(genre)
                     .releaseDate(releaseDate)
                     .duration(duration)
+                    .addedBy(addedBy)
                     .SongUrl("/music/" + file.getOriginalFilename())
                     .songPicUrl("/music/pic/" + file2.getOriginalFilename())
                     .build();

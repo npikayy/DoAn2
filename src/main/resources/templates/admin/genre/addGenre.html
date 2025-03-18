@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm bài hát mới</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Thêm nghệ sĩ mới</h1>
+    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="genreName">Tên thể loại:</label>
+            <input type="text" class="form-control" id="genreName" name="genreName" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm bài hát</button>
+    </form>
+</div>
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('coverImagePreview');
+            output.src = reader.result;    // Đặt URL ảnh từ nội dung tệp đã đọc
+            output.style.display = 'block';  // Hiển thị element ảnh
+        };
+        reader.readAsDataURL(event.target.files[0]); // Đọc tệp đầu tiên được chọn
+    }
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
