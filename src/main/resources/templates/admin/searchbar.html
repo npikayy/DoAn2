@@ -8,13 +8,13 @@
 <div th:fragment="searchbar">
     <div class="btn-group btn-group-toggle mb-1" role="group" aria-label="Search type">
         <input type="radio" class="btn-check" name="searchType" id="name" autocomplete="off" onclick="setSearchType('name')" checked>
-        <label class="btn btn-primary " for="name">Tên bài hát</label>
+        <label class="btn btn-outline-primary " for="name">Tên bài hát</label>
 
         <input type="radio" class="btn-check" name="searchType" id="artist" autocomplete="off" onclick="setSearchType('artist')">
-        <label class="btn btn-primary " for="artist">Ca sĩ</label>
+        <label class="btn btn-outline-primary " for="artist">Ca sĩ</label>
 
         <input type="radio" class="btn-check" name="searchType" id="genre" autocomplete="off" onclick="setSearchType('genre')">
-        <label class="btn btn-primary " for="genre">Thể loại</label>
+        <label class="btn btn-outline-primary " for="genre">Thể loại</label>
     </div>
     <form action="/admin/songs_management/searchSongs" method="get" class="search-form d-flex align-items-center">
         <input type="text" placeholder="Tìm kiếm bài hát" class="form-control me-2" name="name" id="search-input" required>

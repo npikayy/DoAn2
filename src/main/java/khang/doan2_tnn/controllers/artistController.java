@@ -1,6 +1,11 @@
 package khang.doan2_tnn.controllers;
 
+import khang.doan2_tnn.entities.users;
+import khang.doan2_tnn.repositories.userRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import khang.doan2_tnn.services.artistService;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +19,18 @@ import java.io.IOException;
 public class artistController {
     @Autowired
     private artistService artistService;
+    @Autowired
+    private userRepository userRepository;
 
     @GetMapping("")
     public ModelAndView getArtists(ModelAndView modelAndView) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        modelAndView.addObject("user",user.getRole());
         modelAndView.addObject("artists", artistService.getArtists());
         modelAndView.setViewName("admin/artist/artist_management");
         return modelAndView;

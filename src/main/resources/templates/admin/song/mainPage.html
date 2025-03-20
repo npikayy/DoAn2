@@ -16,15 +16,20 @@
     }
 </style>
 <body>
-<div th:replace="~{/admin/navbar :: navbar}"></div>
+<div th:if="${user == 'ROLE_ADMIN'}">
+    <div th:replace="~{/admin/AdminNavbar :: navbar}"> </div>
+</div>
+<div th:if="${user == 'ROLE_UPLOADER'}">
+    <div th:replace="~{/admin/UploaderNavbar :: navbar}"> </div>
+</div>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Danh sách bài hát</h1>
     <div th:replace="~{/admin/searchbar :: searchbar}"></div>
     <div class="mb-4 text-right d-flex">
-        <button type="button" class="btn btn-primary" onclick="window.location.href='/admin/songs_management/addSong'">
+        <button type="button" class="btn btn-outline-primary" onclick="window.location.href='/admin/songs_management/addSong'">
             <i class="fas fa-plus"></i> Thêm nhạc
         </button>
-        <button class="btn btn-primary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#songDetails" aria-expanded="false" aria-controls="songDetails">
+        <button class="btn btn-outline-primary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#songDetails" aria-expanded="false" aria-controls="songDetails">
             Hiện/Ẩn thông tin
         </button>
     </div>
@@ -43,7 +48,7 @@
                             <strong>Thể loại:</strong> <span th:text="${song.genre}">Genre</span><br>
                             <strong>Phát hành:</strong> <span th:text="${song.releaseDate}">ReleaseDate</span><br>
                             <strong>Thời lượng:</strong> <span th:text="${song.duration}">Duration</span><br>
-                            <strong>Thêm bởi:</strong> <span th:text="${song.addedBy}">Duration</span>
+                            <strong>Thêm bởi:</strong> <span th:if="${song.addedBy != 'admin'}">Uploader </span><span th:text="${song.addedBy}">AddedBy</span>
                         </p>
                         <!-- Audio player -->
                         <audio controls th:src="${song.songUrl}" style="width: 100%;"></audio>
@@ -51,10 +56,13 @@
                 </div>
                 <div class="card-footer bg-transparent">
                     <div class="btn-group d-flex" role="group">
-                        <a class="btn btn-primary" th:href="@{/admin/songs_management/updateSong(songId=${song.songId})}">
+                        <a class="btn btn-outline-dark" th:attr="onclick='confirmAction(&quot;delete&quot;,&quot;song&quot;,&quot;' + ${song.songId} + '&quot);'">
+                            <i class="fas fa-music"></i> Thêm
+                        </a>
+                        <a class="btn btn-outline-primary" th:href="@{/admin/songs_management/updateSong(songId=${song.songId})}">
                             <i class="fas fa-edit"></i> Sửa
                         </a>
-                        <a class="btn btn-danger" th:attr="onclick='confirmAction(&quot;delete&quot;,&quot;song&quot;,&quot;' + ${song.songId} + '&quot);'">
+                        <a class="btn btn-outline-danger" th:attr="onclick='confirmAction(&quot;delete&quot;,&quot;song&quot;,&quot;' + ${song.songId} + '&quot);'">
                             <i class="fas fa-trash-alt"></i> Xóa
                         </a>
                     </div>

@@ -2,8 +2,12 @@ package khang.doan2_tnn.controllers;
 
 import jakarta.transaction.Transactional;
 import khang.doan2_tnn.entities.users;
+import khang.doan2_tnn.repositories.userRepository;
 import khang.doan2_tnn.services.userService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,17 +18,25 @@ import java.util.List;
 public class userController {
     @Autowired
     private userService userService;
-
+    @Autowired
+    private userRepository userRepository;
     @GetMapping()
     public ModelAndView user_management(ModelAndView modelAndView) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        modelAndView.addObject("user",user.getRole());
         modelAndView.setViewName("admin/user/user_management");
         modelAndView.addObject("users", userService.getAllUsers());
         return modelAndView;
     }
-    @GetMapping("/admin_management")
+    @GetMapping("/uploader_management")
     public ModelAndView admin_management(ModelAndView modelAndView) {
-        modelAndView.setViewName("admin/user/admin_management");
-        modelAndView.addObject("users", userService.getAllAdmins());
+        modelAndView.setViewName("admin/user/uploader_management");
+        modelAndView.addObject("users", userService.getAllUploaders());
         return modelAndView;
     }
     @Transactional()

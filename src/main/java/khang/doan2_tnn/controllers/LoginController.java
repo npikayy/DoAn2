@@ -27,28 +27,24 @@ public class LoginController {
     @PostMapping("/register")
     public ModelAndView register(String fullName, String username, String password, String email) {
         ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("register");
         if (username.toLowerCase().contains("admin")) {
-            modelAndView.setViewName("register");
             modelAndView.addObject("errorMessage", "Tên tài khoản không được sử dụng.");
             return modelAndView;
         }
         else if (fullName.isEmpty() || username.isEmpty() || password.isEmpty() || email.isEmpty()) {
-            modelAndView.setViewName("register");
             modelAndView.addObject("errorMessage", "Không được để trống các trường.");
             return modelAndView;
         }
         else if (userRepository.findByUsername(username)!= null) {
-            modelAndView.setViewName("register");
             modelAndView.addObject("errorMessage", "Tên tài khoản đã tồn tại.");
             return modelAndView;
         }
         else if (userRepository.findByEmail(email)!= null) {
-            modelAndView.setViewName("register");
             modelAndView.addObject("errorMessage", "Email đã tồn tại.");
             return modelAndView;
         }
         else if (password.length() < 8) {
-            modelAndView.setViewName("register");
             modelAndView.addObject("errorMessage", "Mật khẩu phải có ít nhất 8 ký tự.");
             return modelAndView;
         }
@@ -65,4 +61,6 @@ public class LoginController {
         modelAndView.setViewName("login");
         return modelAndView;
     }
+
+
 }

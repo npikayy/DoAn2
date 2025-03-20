@@ -50,8 +50,9 @@ public class SecurityConfig {
 
                 })
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/login", "/register").permitAll();
-                    registry.requestMatchers("/admin/**").hasRole("ADMIN");
+                    registry.requestMatchers("/login", "/register","/forgotPassword/**").permitAll();
+                    registry.requestMatchers("/admin/user_management/**").hasRole("ADMIN");
+                    registry.requestMatchers("/admin/**").hasAnyRole("ADMIN", "UPLOADER");
                     registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
                 })

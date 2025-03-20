@@ -20,7 +20,6 @@ public class userService implements UserDetailsService {
 
     @Autowired
     private userRepository userRepository;
-
     public void saveUser(String fullName, String username, String password, String email) {
         users user = users.builder()
                .fullName(fullName)
@@ -36,8 +35,8 @@ public class userService implements UserDetailsService {
     public List<users> getAllUsers() {
         return userRepository.findByRole("ROLE_USER");
     }
-    public List<users> getAllAdmins() {
-        return userRepository.findByRole("ROLE_ADMIN");
+    public List<users> getAllUploaders() {
+        return userRepository.findByRole("ROLE_UPLOADER");
     }
 
     public void deleteById(String userId) {
@@ -56,8 +55,8 @@ public class userService implements UserDetailsService {
         users user = userRepository.findByUserId(userId);
         if (user != null && !user.getUsername().equals("admin")) {
             user.setRole(role);
-            if (role.equals("ROLE_ADMIN"))
-                user.setUserPicUrl("/AdminDefaultAvatar.png");
+            if (role.equals("ROLE_UPLOADER"))
+                user.setUserPicUrl("/UploaderDefaultAvatar.png");
             else
                 user.setUserPicUrl("/UserDefaultAvatar.png");
             userRepository.save(user);
@@ -70,6 +69,7 @@ public class userService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         users user = userRepository.findByUsername(username);
         if (user != null) {
+            System.out.println("dang nhap thanh cong");
             return User.withUsername(user.getUsername())
                     .password(user.getPassword())
                     .authorities(user.getRole())

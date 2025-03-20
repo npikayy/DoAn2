@@ -40,14 +40,13 @@ public class songController {
 
     @GetMapping()
     public ModelAndView page(ModelAndView modelAndView){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String username = null;
-//
-//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//            username = userDetails.getUsername();
-//        }
-//        users user = userRepository.findByUsername(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        modelAndView.addObject("user",user.getRole());
         modelAndView.setViewName("/admin/song/mainPage");
         modelAndView.addObject("song",songService.findAll());
         return modelAndView;
@@ -66,11 +65,9 @@ public class songController {
                                 MultipartFile musicFile,
                                 MultipartFile coverImage)
     {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = null;
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
             username = userDetails.getUsername();
         }
         users user = userRepository.findByUsername(username);

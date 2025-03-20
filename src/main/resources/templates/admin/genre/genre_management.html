@@ -12,9 +12,14 @@
     }
 </style>
 <body>
-<div th:replace="~{/admin/navbar :: navbar}"></div>
+<div th:if="${user == 'ROLE_ADMIN'}">
+    <div th:replace="~{/admin/AdminNavbar :: navbar}"> </div>
+</div>
+<div th:if="${user == 'ROLE_UPLOADER'}">
+    <div th:replace="~{/admin/UploaderNavbar :: navbar}"> </div>
+</div>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Danh sách nghệ sĩ</h1>
+    <h1 class="text-center mb-4">Danh sách thể loại</h1>
     <div class="mb-4 text-right d-flex">
         <button type="button" class="btn btn-primary" onclick="window.location.href='/admin/genre_management/addGenre'">
             <i class="fas fa-plus"></i> Thêm thể loại

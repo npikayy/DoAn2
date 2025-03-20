@@ -1,15 +1,13 @@
 package khang.doan2_tnn.entities;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
 @Entity
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,4 +21,6 @@ public class playlists {
     String userId;
     @Column(columnDefinition = "Date")
     LocalDate createdAt;
+    @Column(columnDefinition = "nvarchar(255)")
+    String playlistPicUrl;
 }

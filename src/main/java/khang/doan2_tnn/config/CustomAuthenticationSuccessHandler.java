@@ -14,7 +14,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-        if (role.equals("ROLE_ADMIN")) {
+        if (role.equals("ROLE_ADMIN")|role.equals("ROLE_UPLOADER")) {
             response.sendRedirect("/admin/songs_management");
         } else if (role.equals("ROLE_USER")) {
             response.sendRedirect("/user/home");

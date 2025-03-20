@@ -1,0 +1,28 @@
+spring:
+    datasource:
+        username: sa
+        password: 123456789
+        url: jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=DoAn2Database
+    application:
+        name:DoAn2_TNN
+    jpa:
+        properties:
+            hibernate:
+                hbm2ddl:
+                    auto: update
+                show_sql: true
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: "khangnguyen41888@gmail.com"
+        password: "kato nmzx vfft mhcu"
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
