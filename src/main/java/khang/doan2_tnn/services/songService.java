@@ -1,6 +1,7 @@
 package khang.doan2_tnn.services;
 
 import khang.doan2_tnn.entities.songs;
+import khang.doan2_tnn.repositories.playlistsongRepository;
 import khang.doan2_tnn.repositories.songRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ public class songService {
 
     @Autowired
     private songRepository songRepository;
+    @Autowired
+    private playlistsongRepository playlistsongRepository;
+    @Autowired
+    private playlistService playlistService;
+
     public List<songs> findAll() {
         return songRepository.findAll();
     }
@@ -30,6 +36,10 @@ public class songService {
     }
     public void deleteById(Long id) {
         songs song = songRepository.findById(id).orElse(null);
+        List<String> playlistIds = playlistsongRepository.findPlaylistIDBySongId(id);
+        for (String playlistId : playlistIds) {
+            playlistService.deleteSongFromPlaylist(playlistId, id);
+        }
         if (song != null) {
             String songUrl = song.getSongUrl();
             String newSongUrl = songUrl.replace("/music/", "src/main/resources/static/music/");
@@ -52,36 +62,77 @@ public class songService {
         long remainingSeconds = seconds % 60;
         return String.format("%d:%02d", minutes, remainingSeconds);
     }
-    public void uploadMusic(MultipartFile file, MultipartFile file2, String name, String artist, String album, String genre, LocalDate releaseDate, String addedBy) {
-
+    public void uploadMusic(MultipartFile musicFile, MultipartFile coverImageFile, String name, String artist, String album, String genre, LocalDate releaseDate, String addedBy, String lastModifiedBy) {
         try {
-            // Tạo thư mục lưu trữ nếu chưa tồn tại
+            // Ensure directories exist
             File musicDir = new File(MUSIC_DIR);
             if (!musicDir.exists()) {
                 musicDir.mkdirs();
             }
+
             File picDir = new File(PIC_DIR);
             if (!picDir.exists()) {
                 picDir.mkdirs();
             }
-            // Lưu ảnh bìa
-            String picName = file2.getOriginalFilename();
-            File picFile = new File(PIC_DIR + picName);
-            try (FileOutputStream fos = new FileOutputStream(picFile)) {
-                fos.write(file2.getBytes());
+
+            // Handle unique naming for cover image
+            String originalPicName = coverImageFile.getOriginalFilename();
+            if (originalPicName.isEmpty()) {
+                throw new IllegalArgumentException("File name for cover image cannot be null or empty");
             }
 
-            // Lưu tệp vào thư mục
-            String fileName = file.getOriginalFilename();
-            File musicFile = new File(MUSIC_DIR + fileName);
-            try (FileOutputStream fos = new FileOutputStream(musicFile)) {
-                fos.write(file.getBytes());
+            String picName = originalPicName;
+            String picExtension = "";
+            int lastDotIndex = originalPicName.lastIndexOf(".");
+            if (lastDotIndex > 0) {
+                picExtension = originalPicName.substring(lastDotIndex); // File extension
+                picName = originalPicName.substring(0, lastDotIndex);    // Base name
             }
-            String musicFilePath = "src/main/resources/static/music/" + file.getOriginalFilename();
-            long durationInSeconds = AudioUtils.getAudioDurationInSeconds(musicFilePath);
+
+            File picFile = new File(PIC_DIR + originalPicName);
+            int counter = 1;
+            while (picFile.exists()) {
+                picFile = new File(PIC_DIR + picName + "_" + counter + picExtension);
+                counter++;
+            }
+
+            // Save the cover image file
+            try (FileOutputStream fos = new FileOutputStream(picFile)) {
+                fos.write(coverImageFile.getBytes());
+            }
+
+            // Handle unique naming for music file
+            String originalMusicName = musicFile.getOriginalFilename();
+            if (originalMusicName.isEmpty()) {
+                throw new IllegalArgumentException("File name for music cannot be null or empty");
+            }
+
+            String musicName = originalMusicName;
+            String musicExtension = "";
+            lastDotIndex = originalMusicName.lastIndexOf(".");
+            if (lastDotIndex > 0) {
+                musicExtension = originalMusicName.substring(lastDotIndex); // File extension
+                musicName = originalMusicName.substring(0, lastDotIndex);   // Base name
+            }
+
+            File musicFilePath = new File(MUSIC_DIR + originalMusicName);
+            counter = 1;
+            while (musicFilePath.exists()) {
+                musicFilePath = new File(MUSIC_DIR + musicName + "_" + counter + musicExtension);
+                counter++;
+            }
+
+            // Save the music file
+            try (FileOutputStream fos = new FileOutputStream(musicFilePath)) {
+                fos.write(musicFile.getBytes());
+            }
+
+            // Calculate song duration
+            String musicPath = "src/main/resources/static/music/" + musicFilePath.getName();
+            long durationInSeconds = AudioUtils.getAudioDurationInSeconds(musicPath);
             String duration = formatDuration(durationInSeconds);
 
-            // Tạo dòng mới trong bảng songs
+            // Create a new record in the songs table
             songs song = songs.builder()
                     .songName(name)
                     .artist(artist)
@@ -90,59 +141,124 @@ public class songService {
                     .releaseDate(releaseDate)
                     .duration(duration)
                     .addedBy(addedBy)
-                    .SongUrl("/music/" + file.getOriginalFilename())
-                    .songPicUrl("/music/pic/" + file2.getOriginalFilename())
+                    .lastModifiedBy(lastModifiedBy)
+                    .SongUrl("/music/" + musicFilePath.getName())
+                    .songPicUrl("/music/pic/" + picFile.getName())
                     .build();
 
+            // Save to the database
             songRepository.save(song);
 
         } catch (IOException e) {
+            throw new RuntimeException("Error occurred while uploading music or cover image", e);
         }
     }
-    public void updateMusic(MultipartFile file1, MultipartFile file2, Long id, String name, String artist, String album, String genre, LocalDate releaseDate) throws IOException {
+    public void updateMusic(Long id,String name, String artist, String album, String genre, LocalDate releaseDate, String lastModifiedBy) throws IOException {
         songs song = songRepository.findById(id).orElse(null);
-        String newSongUrl = "/music/" + file1.getOriginalFilename();
-        String newPicUrl = "/music/pic/" + file2.getOriginalFilename();
-        if (!newSongUrl.equals(song.getSongUrl())) {
-            String songUrl = song.getSongUrl();
-            newSongUrl = songUrl.replace("/music/", "src/main/resources/static/music/");
-            File oldFile = new File(newSongUrl);
-            if (oldFile.exists()) {
-                oldFile.delete();
-            }
+        if (song != null) {
+            songRepository.updateSong(id, name, artist, album, genre, releaseDate, lastModifiedBy);
         }
-        if (!newPicUrl.equals(song.getSongPicUrl())) {
-            String picUrl = song.getSongPicUrl();
-            newPicUrl = picUrl.replace("/music/pic/", "src/main/resources/static/music/pic/");
-            File oldFile = new File(newPicUrl);
-            if (oldFile.exists()) {
-                oldFile.delete();
-            }
-        }
-        // Lưu ảnh bìa
-        File picFile = new File(PIC_DIR + file2.getOriginalFilename());
-        FileOutputStream fos1 = new FileOutputStream(picFile);
-            fos1.write(file2.getBytes());
+    }
 
-        // Lưu tệp vào thư mục
-        File musicFile = new File(MUSIC_DIR + file1.getOriginalFilename());
-        FileOutputStream fos2 = new FileOutputStream(musicFile);
-            fos2.write(file1.getBytes());
-        String musicFilePath = "src/main/resources/static/music/" + file1.getOriginalFilename();
-        long durationInSeconds = AudioUtils.getAudioDurationInSeconds(musicFilePath);
+    public void updatePicFile(MultipartFile coverImage, long id, String lastModifiedBy) throws IOException {
+        // Fetch the song from the repository
+        songs song = songRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Song not found with ID: " + id)
+        );
+
+        // Prepare the new picture name and URL
+        String originalPicName = coverImage.getOriginalFilename();
+        if (originalPicName.isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be null or empty");
+        }
+
+        String picName = originalPicName;
+        String picExtension = "";
+        int lastDotIndex = originalPicName.lastIndexOf(".");
+        if (lastDotIndex > 0) {
+            picExtension = originalPicName.substring(lastDotIndex); // File extension
+            picName = originalPicName.substring(0, lastDotIndex);   // Base name without extension
+        }
+
+        // Generate a unique name if the file already exists
+        File picFile = new File(PIC_DIR + originalPicName);
+        int counter = 1;
+        while (picFile.exists()) {
+            picFile = new File(PIC_DIR + picName + "_" + counter + picExtension);
+            counter++;
+        }
+
+        // Delete the old file if the new name is different
+        String newPicUrl = "/music/pic/" + picFile.getName();
+        if (!newPicUrl.equals(song.getSongPicUrl())) {
+            String oldPicUrl = song.getSongPicUrl();
+            String oldPicPath = oldPicUrl.replace("/music/pic/", "src/main/resources/static/music/pic/");
+            File oldFile = new File(oldPicPath);
+            if (oldFile.exists() && !oldFile.delete()) {
+                System.err.println("Failed to delete old file: " + oldPicPath);
+            }
+        }
+
+        // Save the new file
+        try (FileOutputStream fos = new FileOutputStream(picFile)) {
+            fos.write(coverImage.getBytes());
+        }
+
+        // Update the database with the new picture URL
+        songRepository.updatePicUrl(id, newPicUrl, lastModifiedBy);
+    }
+
+    public void updateMusicFile(MultipartFile musicFile, long id, String lastModifiedBy) throws IOException {
+        // Fetch the song from the repository
+        songs song = songRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Song not found with ID: " + id)
+        );
+
+        // Prepare the original file name and validate it
+        String originalMusicName = musicFile.getOriginalFilename();
+        if (originalMusicName == null || originalMusicName.isEmpty()) {
+            throw new IllegalArgumentException("File name cannot be null or empty");
+        }
+
+        // Extract base name and extension for unique naming
+        String musicName = originalMusicName;
+        String musicExtension = "";
+        int lastDotIndex = originalMusicName.lastIndexOf(".");
+        if (lastDotIndex > 0) {
+            musicExtension = originalMusicName.substring(lastDotIndex);  // File extension
+            musicName = originalMusicName.substring(0, lastDotIndex);    // Base name without extension
+        }
+
+        // Generate a unique name if the file already exists
+        File musicFilePath = new File(MUSIC_DIR + originalMusicName);
+        int counter = 1;
+        while (musicFilePath.exists()) {
+            musicFilePath = new File(MUSIC_DIR + musicName + "_" + counter + musicExtension);
+            counter++;
+        }
+
+        // Delete the old file if the new name is different
+        String newSongUrl = "/music/" + musicFilePath.getName();
+        if (!newSongUrl.equals(song.getSongUrl())) {
+            String oldSongUrl = song.getSongUrl();
+            String oldSongPath = oldSongUrl.replace("/music/", "src/main/resources/static/music/");
+            File oldFile = new File(oldSongPath);
+            if (oldFile.exists() && !oldFile.delete()) {
+                System.err.println("Failed to delete old file: " + oldSongPath);
+            }
+        }
+
+        // Save the new music file
+        try (FileOutputStream fos = new FileOutputStream(musicFilePath)) {
+            fos.write(musicFile.getBytes());
+        }
+
+        // Calculate the duration of the song
+        String musicPath = "src/main/resources/static/music/" + musicFilePath.getName();
+        long durationInSeconds = AudioUtils.getAudioDurationInSeconds(musicPath);
         String duration = formatDuration(durationInSeconds);
 
-        songs songToUpdate = songs.builder()
-                .songId(id)
-                .songName(name)
-                .artist(artist)
-                .album(album)
-                .genre(genre)
-                .releaseDate(releaseDate)
-                .duration(duration)
-                .SongUrl("/music/" + file1.getOriginalFilename())
-                .songPicUrl("/music/pic/" + file2.getOriginalFilename())
-                .build();
-        songRepository.save(songToUpdate);
+        // Update the database with the new music URL and duration
+        songRepository.updateSongUrl(id, newSongUrl, duration, lastModifiedBy);
     }
 }

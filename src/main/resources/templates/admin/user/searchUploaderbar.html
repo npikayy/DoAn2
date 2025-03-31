@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:fragment="searchbar" class="mb-3">
+    <div class="btn-group btn-group-toggle mb-1" role="group" aria-label="Search type">
+        <input type="radio" class="btn-check" name="searchType" id="fullName" autocomplete="off" onclick="setSearchType('fullName')" checked>
+        <label class="btn btn-outline-primary rounded-pill" for="fullName">Tên người dùng</label>
+
+        <input type="radio" class="btn-check" name="searchType" id="email" autocomplete="off" onclick="setSearchType('email')">
+        <label class="btn btn-outline-primary rounded-pill mx-2" for="email">Email</label>
+    </div>
+    <form action="/admin/user_management/SearchUploaders" method="get" class="my-2">
+        <div class="login__box">
+            <input type="text" placeholder="" class="login__input" name="fullName" id="search-input" required>
+            <label for="search-input" class="login__label">Tìm kiếm người dùng</label>
+            <button type="submit" class="normal__button" id="search-btn">Tìm kiếm</button>
+        </div>
+    </form>
+    <script>
+        function setSearchType(type) {
+            document.getElementById('search-input').name = type;
+        }
+    </script>
+
+</div>
+</body>
+</html>

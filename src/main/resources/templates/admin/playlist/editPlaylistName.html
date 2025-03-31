@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm bài hát mới</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Tạo playlist mới</h1>
+    <div class="btn-group btn-group-toggle mb-1" role="group" aria-label="Search type">
+        <a href="/admin/playlist_management" class="btn btn-outline-primary rounded-pill ">Quay lại</a>
+        <a th:href="@{/admin/playlist_management/editPlaylistCoverImage(playlistId=${playlist.playlistId})}"  class="btn btn-outline-primary rounded-pill mx-3">Sửa file ảnh</a>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        <div class="login__box my-3">
+            <input type="text" class="login__input" th:value="${playlist.playlistName}" id="playlistName" placeholder="" name="playlistName">
+            <label for="playlistName" class="login__label">Tên playlist</label>
+        </div>
+        <p id="errorMessage" class="error-message d-none text-danger">Vui lòng nhập tên trước khi nhấn nút cập nhật!</p>
+        <button type="submit" class="normal__button" id="updateButton">Cập nhật</button>
+    </form>
+</div>
+<script>
+    document.getElementById("updateButton").addEventListener("click", function (event) {
+        const InputText = document.getElementById("playlistName");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check if a file is selected
+        if (InputText.value === "") {
+            event.preventDefault(); // Prevent form submission
+            errorMessage.classList.remove("d-none"); // Show the error message
+        } else {
+            errorMessage.classList.add("d-none"); // Hide the error message if valid
+        }
+    });
+</script>
+</body>
+</html>

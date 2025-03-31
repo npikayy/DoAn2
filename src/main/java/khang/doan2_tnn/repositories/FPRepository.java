@@ -13,4 +13,7 @@ public interface FPRepository extends JpaRepository<ForgotPassword, Integer> {
     Optional<ForgotPassword> findByOtpAndUser(Integer otp, users user);
     @Transactional
     void deleteByFpId(Integer fpId);
+
+    @Query("SELECT fp FROM ForgotPassword fp WHERE fp.user = :user")
+    ForgotPassword findByUser(users user);
 }

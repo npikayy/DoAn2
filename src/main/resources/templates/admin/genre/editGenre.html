@@ -3,19 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Sửa thông tin thể loại</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Sửa thông tin thể loại</h1>
-    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <a href="javascript:history.back();" class="btn btn-outline-primary rounded-pill mb-4" >Quay lại</a>
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="genreName">Tên thể loại:</label>
-            <input type="text" th:value="${genre.genreName}" class="form-control" id="genreName" name="genreName" required>
+        <div class="login__box mb-3">
+            <input type="text" th:value="${genre.genreName}" class="login__input" placeholder="" id="genreName" name="genreName">
+            <label for="genreName" class="login__label">Tên thể loại</label>
         </div>
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <p id="errorMessage" class="error-message d-none text-danger">Vui lòng nhập tên thể loại trước khi nhấn nút cập nhật!</p>
+        <button type="submit" class="normal__button" id="updateButton">Cập nhật</button>
     </form>
 </div>
+<script>
+    document.getElementById("updateButton").addEventListener("click", function (event) {
+        const textInput1 = document.getElementById("genreName");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check if a file is selected
+        if (!textInput1.value) {
+            event.preventDefault(); // Prevent form submission
+            errorMessage.classList.remove("d-none"); // Show the error message
+        } else {
+            errorMessage.classList.add("d-none"); // Hide the error message if valid
+        }
+    });
+</script>
 </body>
 </html>

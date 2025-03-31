@@ -32,9 +32,12 @@ public class songs {
     @Column(columnDefinition = "nvarchar(255)")
     String addedBy;
     @Column(columnDefinition = "nvarchar(255)")
+    String lastModifiedBy;
+    @Column(columnDefinition = "nvarchar(255)")
     String songPicUrl;
     @Column(columnDefinition = "nvarchar(255)")
     String SongUrl;
+    Integer listenCount;
 
 
 }

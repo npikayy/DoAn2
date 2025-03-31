@@ -29,8 +29,7 @@ public class songController {
     @GetMapping("/searchSongs")
     public ModelAndView getSongByNameorArtistorGenre(@RequestParam(required = false) String name,
                                                     @RequestParam(required = false) String artist,
-                                                    @RequestParam(required = false) String genre,
-                                                     ModelAndView modelAndView)
+                                                    @RequestParam(required = false) String genre, ModelAndView modelAndView)
     {
         List<songs> songs = songService.findByNameorArtistorGenre(name, artist, genre);
         modelAndView.setViewName("/admin/song/searchPage");
@@ -71,7 +70,7 @@ public class songController {
             username = userDetails.getUsername();
         }
         users user = userRepository.findByUsername(username);
-        songService.uploadMusic(musicFile, coverImage, songName, artist, album, genre, releaseDate, user.getUsername());
+        songService.uploadMusic(musicFile, coverImage, songName, artist, album, genre, releaseDate, user.getUsername(),user.getUsername());
         return new ModelAndView("redirect:/admin/songs_management");
     }
     @GetMapping("/updateSong")
@@ -81,16 +80,50 @@ public class songController {
         modelAndView.addObject("song", song);
         return modelAndView;
     }
+    @GetMapping("/updateSongFile")
+    public ModelAndView updateSongFile(ModelAndView modelAndView, @RequestParam String songId) {
+        modelAndView.setViewName("/admin/song/updateSongFile");
+        modelAndView.addObject("songId", songId);
+        return modelAndView;
+    }
+    @GetMapping("/updatePicFile")
+    public ModelAndView updatePicFile(ModelAndView modelAndView, @RequestParam String songId) {
+        modelAndView.setViewName("/admin/song/updatePicFile");
+        modelAndView.addObject("songId", songId);
+        return modelAndView;
+    }
     @PostMapping("/updateSong")
-    public ModelAndView updateSong(MultipartFile musicFile,
-                                   MultipartFile coverImage,
-                                   @RequestParam String songId,
-                                   String songName,
-                                   String artist,
-                                   String album,
-                                   String genre,
-                                   LocalDate releaseDate) throws IOException {
-        songService.updateMusic(musicFile, coverImage, Long.parseLong(songId), songName, artist, album, genre, releaseDate);
+    public ModelAndView updateSong(@RequestParam String songId, String songName, String artist, String album, String genre, LocalDate releaseDate) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        songService.updateMusic(Long.parseLong(songId), songName, artist, album, genre, releaseDate, user.getUsername());
+        return new ModelAndView("redirect:/admin/songs_management");
+    }
+    @PostMapping("/updateSongFile")
+    public ModelAndView updateSongFile(@RequestParam String songId, MultipartFile musicFile) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        songService.updateMusicFile(musicFile, Long.parseLong(songId), user.getUsername());
+        return new ModelAndView("redirect:/admin/songs_management");
+    }
+
+    @PostMapping("/updatePicFile")
+    public ModelAndView updatePicFile(@RequestParam String songId, MultipartFile coverImage) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            username = userDetails.getUsername();
+        }
+        users user = userRepository.findByUsername(username);
+        songService.updatePicFile(coverImage, Long.parseLong(songId), user.getUsername());
         return new ModelAndView("redirect:/admin/songs_management");
     }
     @GetMapping("/deleteSong")

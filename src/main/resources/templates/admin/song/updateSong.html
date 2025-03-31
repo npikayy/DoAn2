@@ -4,82 +4,56 @@
     <meta charset="UTF-8">
     <title>Sửa thông tin bài hát mới</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Sửa thông tin bài hát</h1>
-    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <a href="javascript:history.back();" class="btn btn-outline-primary rounded-pill mb-3">Quay lại</a>
     <form method="post" enctype="multipart/form-data">
-        <div class="d-flex justify-content-between">
-            <div class="flex-fill me-3">
-                <div class="form-group mb-3">
-                    <label for="songName">Tên bài hát:</label>
-                    <input type="text" class="form-control" id="songName" name="songName" required
-                           th:value="${song.songName}">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="artist">Ca sĩ:</label>
-                    <input type="text" class="form-control" id="artist" name="artist" required
-                           th:value="${song.artist}">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="album">Album:</label>
-                    <input type="text" class="form-control" id="album" name="album"
-                           th:value="${song.album}">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="genre">Thể loại:</label>
-                    <input type="text" class="form-control" id="genre" name="genre"
-                           th:value="${song.genre}">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="releaseDate">Ngày phát hành:</label>
-                    <input type="date" class="form-control" id="releaseDate" name="releaseDate"
-                           th:value="${song.releaseDate}">
-                </div>
+        <div id="textInputs" class="text-inputs">
+            <div class="login__box my-3">
+                <input type="text" class="login__input" id="songName" placeholder="" name="songName" th:value="${song.songName}" required>
+                <label for="songName" class="login__label">Tên bài hát</label>
             </div>
-
-            <div class="flex-fill ms-5">
-                <div class="form-group mb-3">
-                    <label for="musicFile">Tệp nhạc:</label>
-                    <input type="file" class="form-control-file" id="musicFile" name="musicFile"
-                           accept="audio/*" required>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="coverImage">Ảnh bìa mới:</label>
-                    <input type="file" class="form-control-file" id="coverImage" name="coverImage"
-                           accept="image/*" onchange="previewImage(event)">
-                </div>
-
-                <div class="form-group mb-3">
-                    <label>Ảnh bìa xem trước:</label>
-                    <br>
-                    <img id="coverImagePreview" class="img-thumbnail" style="display:none;" alt="ảnh bìa xem trước" width="200" height="200">
-                </div>
+            <div class="login__box my-3">
+                <input type="text" class="login__input" id="artist" placeholder="" name="artist" th:value="${song.artist}" required>
+                <label for="artist" class="login__label">Ca sĩ</label>
             </div>
+            <div class="login__box my-3">
+                <input type="text" class="login__input" id="album" placeholder="" th:value="${song.album}" name="album">
+                <label for="album" class="login__label">Album</label>
+            </div>
+            <div class="login__box my-3">
+                <input type="text" class="login__input" id="genre" placeholder="" th:value="${song.genre}" name="genre">
+                <label for="genre" class="login__label">Thể loại</label>
+            </div>
+            <div class="login__box my-3">
+                <input type="date" class="login__input" id="releaseDate" placeholder="" th:value="${song.releaseDate}" name="releaseDate">
+                <label for="releaseDate" class="login__label">Ngày phát hành</label>
+            </div>
+            <p id="errorMessage" class="error-message d-none text-danger">Vui lòng ghi đầy đủ thông tin trước khi nhấn nút cập nhật!</p>
+            <button type="submit" class="normal__button" id="updateButton">Cập nhật thông tin bài hát</button>
         </div>
-
-        <button type="submit" class="btn btn-primary mt-3">Cập nhật thông tin bài hát</button>
     </form>
 </div>
 <script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('coverImagePreview');
-            output.src = reader.result;    // Đặt URL ảnh từ nội dung tệp đã đọc
-            output.style.display = 'block';  // Hiển thị element ảnh
-        };
-        reader.readAsDataURL(event.target.files[0]); // Đọc tệp đầu tiên được chọn
-    }
+    document.getElementById("updateButton").addEventListener("click", function (event) {
+        const textInput1 = document.getElementById("songName");
+        const textInput2 = document.getElementById("artist");
+        const textInput3 = document.getElementById("album");
+        const textInput4 = document.getElementById("genre");
+        const textInput5 = document.getElementById("releaseDate");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check if a file is selected
+        if (!textInput1.value ||!textInput2.value||!textInput3.value||!textInput4.value||!textInput5.value) {
+            event.preventDefault(); // Prevent form submission
+            errorMessage.classList.remove("d-none"); // Show the error message
+        } else {
+            errorMessage.classList.add("d-none"); // Hide the error message if valid
+        }
+    });
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

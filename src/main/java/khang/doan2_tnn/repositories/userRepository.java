@@ -24,7 +24,14 @@ public interface userRepository extends JpaRepository<users, Long> {
     void updatePassword(String email, String password);
 
     @Query("SELECT u FROM users u " +
-            "WHERE (:fullName IS NULL OR u.fullName LIKE %:fullName%)"+
-            "AND (:email IS NULL OR u.email = :email)")
+            "WHERE (:fullName IS NULL OR u.fullName LIKE %:fullName%) " +
+            "AND (:email IS NULL OR u.email = :email) " +
+            "AND u.role = 'ROLE_USER'")
     List<users> searchUsers(String fullName, String email);
+    @Query("SELECT u FROM users u " +
+            "WHERE (:fullName IS NULL OR u.fullName LIKE %:fullName%) " +
+            "AND (:email IS NULL OR u.email = :email) " +
+            "AND u.role = 'ROLE_UPLOADER'")
+    List<users> searchUploaders(String fullName, String email);
+
 }

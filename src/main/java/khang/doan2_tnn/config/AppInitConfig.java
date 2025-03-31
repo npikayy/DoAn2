@@ -33,7 +33,7 @@ public class AppInitConfig {
                         .role("ROLE_ADMIN")
                         .fullName("Quản trị viên")
                         .email("admin@admin.com")
-                        .userPicUrl("/AdminDefaultAvatar.png")
+                        .userPicUrl("/img/AdminDefaultAvatar.png")
                         .build();
                 userRepository.save(user);
                 log.warn("admin user has been created with default password: admin");

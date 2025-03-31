@@ -1,7 +1,6 @@
 package khang.doan2_tnn.controllers;
 
 import khang.doan2_tnn.repositories.userRepository;
-import khang.doan2_tnn.services.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +18,13 @@ public class LoginController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+//    @GetMapping("/register")
+//    public ModelAndView register(ModelAndView modelAndView) {
+//        modelAndView.setViewName("register");
+//        return modelAndView;
+//    }
     @GetMapping("/register")
-    public ModelAndView register(ModelAndView modelAndView) {
+    public ModelAndView register2(ModelAndView modelAndView) {
         modelAndView.setViewName("register");
         return modelAndView;
     }
@@ -54,7 +58,7 @@ public class LoginController {
         }
     }
     @GetMapping("/login")
-    public ModelAndView login(@RequestParam(required = false) String error, ModelAndView modelAndView) {
+    public ModelAndView login2(@RequestParam(required = false) String error, ModelAndView modelAndView) {
         if (error != null) {
             modelAndView.addObject("errorMessage", "Tên tài khoản hoặc mật khẩu không đúng!");
         }

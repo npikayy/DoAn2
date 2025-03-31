@@ -22,13 +22,13 @@ public class userService implements UserDetailsService {
     private userRepository userRepository;
     public void saveUser(String fullName, String username, String password, String email) {
         users user = users.builder()
-               .fullName(fullName)
-               .username(username)
-               .password(password)
-               .email(email)
+                .fullName(fullName)
+                .username(username)
+                .password(password)
+                .email(email)
                 .role("ROLE_USER")
-                .userPicUrl("/UserDefaultAvatar.png")
-               .build();
+                .userPicUrl("/img/UserDefaultAvatar.png")
+                .build();
         userRepository.save(user);
     }
 
@@ -41,7 +41,7 @@ public class userService implements UserDetailsService {
 
     public void deleteById(String userId) {
         users user = userRepository.findByUserId(userId);
-        if (user != null && !user.getUsername().equals("admin")) {
+        if (user != null) {
             if (!user.getUserPicUrl().equals("/UserDefaultAvatar.png")) {
                 String picUrl = user.getUserPicUrl();
                 String newPicUrl = picUrl.replace("/UserProfilePics/", "src/main/resources/static/UserProfilePics/");
@@ -56,9 +56,9 @@ public class userService implements UserDetailsService {
         if (user != null && !user.getUsername().equals("admin")) {
             user.setRole(role);
             if (role.equals("ROLE_UPLOADER"))
-                user.setUserPicUrl("/UploaderDefaultAvatar.png");
+                user.setUserPicUrl("/img/UploaderDefaultAvatar.png");
             else
-                user.setUserPicUrl("/UserDefaultAvatar.png");
+                user.setUserPicUrl("/img/UserDefaultAvatar.png");
             userRepository.save(user);
         }
     }
@@ -80,5 +80,8 @@ public class userService implements UserDetailsService {
     }
     public List<users> searchUsers(String fullName, String email) {
         return userRepository.searchUsers(fullName, email);
+    }
+    public List<users> searchUploaders(String fullName, String email) {
+        return userRepository.searchUploaders(fullName, email);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,13 +48,25 @@ public class SecurityConfig {
                     httpForm
                         .loginPage("/login").permitAll()
                             .successHandler(successHandler());
-
-                })
+                }).logout(httpLogout -> httpLogout
+                        .logoutUrl("/logout") // URL để xử lý đăng xuất
+                        .logoutSuccessUrl("/TrangChu") // Chuyển hướng sau khi đăng xuất
+                        .permitAll()
+                )
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/login", "/register","/forgotPassword/**").permitAll();
+                    registry.requestMatchers("/TrangChu/**",
+                            "/login",
+                            "/register",
+                            "/forgotPassword/**",
+                            "/css/**",
+                            "/js/**",
+                            "/img/**",
+                            "/music/**",
+                            "/playlistPics/**",
+                            "/UserProfilePics/**",
+                            "/artistPics/**").permitAll();
                     registry.requestMatchers("/admin/user_management/**").hasRole("ADMIN");
                     registry.requestMatchers("/admin/**").hasAnyRole("ADMIN", "UPLOADER");
-                    registry.requestMatchers("/user/**").hasRole("USER");
                     registry.anyRequest().authenticated();
                 })
                 .build();

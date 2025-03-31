@@ -17,7 +17,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (role.equals("ROLE_ADMIN")|role.equals("ROLE_UPLOADER")) {
             response.sendRedirect("/admin/songs_management");
         } else if (role.equals("ROLE_USER")) {
-            response.sendRedirect("/user/home");
+            response.sendRedirect("/TrangChu");
         } else {
             response.sendRedirect("/login?error=true");
         }

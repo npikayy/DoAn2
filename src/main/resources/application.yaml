@@ -4,7 +4,7 @@ spring:
         password: 123456789
         url: jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=DoAn2Database
     application:
-        name:DoAn2_TNN
+        name: DoAn2_TNN
     jpa:
         properties:
             hibernate:

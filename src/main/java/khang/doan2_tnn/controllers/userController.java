@@ -67,7 +67,16 @@ public class userController {
                                     @RequestParam(required = false) String fullName,
                                     @RequestParam(required = false) String email){
         List<users> users = userService.searchUsers(fullName, email);
-        modelAndView.setViewName("/admin/user/searchPage");
+        modelAndView.setViewName("admin/user/searchUserPage");
+        modelAndView.addObject("users", users);
+        return modelAndView;
+    }
+    @GetMapping("/SearchUploaders")
+    public ModelAndView SearchUploaders(ModelAndView modelAndView,
+                                    @RequestParam(required = false) String fullName,
+                                    @RequestParam(required = false) String email){
+        List<users> users = userService.searchUploaders(fullName, email);
+        modelAndView.setViewName("admin/user/searchUploaderPage");
         modelAndView.addObject("users", users);
         return modelAndView;
     }

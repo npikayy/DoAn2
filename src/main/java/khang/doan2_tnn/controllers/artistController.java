@@ -41,8 +41,8 @@ public class artistController {
         return modelAndView;
     }
     @PostMapping("/addArtist")
-    public ModelAndView addArtist(String artistName, String artistBio, MultipartFile imageFile) throws FileNotFoundException {
-        artistService.addArtist(artistName, artistBio, imageFile);
+    public ModelAndView addArtist(String artistName, String artistBio, MultipartFile coverImage) throws FileNotFoundException {
+        artistService.addArtist(artistName, artistBio, coverImage);
         return new ModelAndView("redirect:/admin/artist_management");
     }
     @GetMapping("/deleteArtist")
@@ -58,10 +58,21 @@ public class artistController {
         modelAndView.addObject("artist", artistService.getArtistById(Long.parseLong(artistId)));
         return modelAndView;
     }
-    @PostMapping("/editArtist")
-    public ModelAndView editArtist(@RequestParam String artistId,String artistName, String artistBio, MultipartFile imageFile) throws IOException {
-        artistService.updateArtist(Long.parseLong(artistId), artistName, artistBio, imageFile);
+    @GetMapping("/editPic")
+    public ModelAndView editPic(ModelAndView modelAndView, @RequestParam String artistId)
+    {
+        modelAndView.setViewName("admin/artist/editPic");
+        modelAndView.addObject("artist", artistService.getArtistById(Long.parseLong(artistId)));
+        return modelAndView;
+    }
+    @PostMapping("/editPic")
+    public ModelAndView editPic(@RequestParam String artistId, MultipartFile coverImage) throws IOException {
+        artistService.updatePicUrl(Long.parseLong(artistId), coverImage);
         return new ModelAndView("redirect:/admin/artist_management");
-
+    }
+    @PostMapping("/editArtist")
+    public ModelAndView editArtist(@RequestParam String artistId,String artistName, String artistBio) throws IOException {
+        artistService.updateArtist(Long.parseLong(artistId), artistName, artistBio);
+        return new ModelAndView("redirect:/admin/artist_management");
     }
 }

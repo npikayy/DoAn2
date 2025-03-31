@@ -3,49 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Sửa thông tin nghệ sĩ</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <div class="container mt-5">
     <h1 class="text-center mb-4">Sửa thông tin nghệ sĩ</h1>
-    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <div class="btn-group btn-group-toggle mb-1" role="group" aria-label="Search type">
+        <a href="/admin/artist_management" class="btn btn-outline-primary rounded-pill ">Quay lại</a>
+        <a th:href="@{/admin/artist_management/editPic(artistId=${artist.artistId})}"  class="btn btn-outline-primary rounded-pill mx-3">Sửa file ảnh bìa</a>
+    </div>
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="artistName">Tên nghệ sĩ:</label>
-            <input type="text" th:value="${artist.artistName}" class="form-control" id="artistName" name="artistName" required>
+        <div class="login__box my-3">
+            <input type="text" class="login__input" placeholder="" th:value="${artist.artistName}" id="artistName" name="artistName">
+            <label for="artistName" class="login__label">Tên nghệ sĩ</label>
         </div>
-
-        <div class="form-group">
-            <label for="artistBio">Thông tin nghệ sĩ:</label>
-            <textarea th:text="${artist.artistBio}" class="form-control" id="artistBio" name="artistBio" rows="3" required></textarea>
+        <div class="login__box my-3">
+            <textarea class="login__textarea" id="artistBio" th:text="${artist.artistBio}" placeholder="Thông tin về nghệ sĩ" name="artistBio" rows="3"></textarea>
         </div>
-
-        <div class="form-group">
-            <label for="imageFile">Ảnh bìa:</label>
-            <input type="file" onchange="previewImage(event)" class="form-control-file" id="imageFile" name="imageFile" accept="image/*">
-        </div>
-        <div class="form-group">
-            <label>Ảnh bìa xem trước:</label>
-            <br>
-            <img id="coverImagePreview" class="img-thumbnail" style="display:none;" alt="ảnh bìa xem trước" width="200" height="200">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <p id="errorMessage" class="error-message d-none text-danger">Vui lòng ghi đầy đủ thông tin trước khi nhấn nút cập nhật!</p>
+        <button type="submit" class="normal__button" id="updateButton">Cập nhật</button>
     </form>
 </div>
 <script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('coverImagePreview');
-            output.src = reader.result;    // Đặt URL ảnh từ nội dung tệp đã đọc
-            output.style.display = 'block';  // Hiển thị element ảnh
-        };
-        reader.readAsDataURL(event.target.files[0]); // Đọc tệp đầu tiên được chọn
-    }
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    document.getElementById("updateButton").addEventListener("click", function (event) {
+        const textInput1 = document.getElementById("artistName");
+        const textInput2 = document.getElementById("artistBio");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check if a file is selected
+        if (!textInput1.value ||!textInput2.value) {
+            event.preventDefault(); // Prevent form submission
+            errorMessage.classList.remove("d-none"); // Show the error message
+        } else {
+            errorMessage.classList.add("d-none"); // Hide the error message if valid
+        }
+    });
+</script>=
 </body>
 </html>

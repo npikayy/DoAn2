@@ -3,44 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Thêm bài hát mới</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Thêm playlist mới</h1>
-    <a href="javascript:history.back();" class="btn btn-primary mb-3">Quay lại</a>
+    <h1 class="text-center mb-4">Tạo playlist mới</h1>
+    <a href="javascript:history.back();" class="btn btn-outline-primary rounded-pill mb-3">Quay lại</a>
     <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="playlistName">Tên playlist:</label>
-            <input type="text" class="form-control" id="playlistName" name="playlistName" required>
+        <div class="login__box my-3">
+            <input type="text" class="login__input" id="playlistName" placeholder="" name="playlistName">
+            <label for="playlistName" class="login__label">Tên playlist</label>
         </div>
-
-        <div class="form-group">
-            <label for="imageFile">Ảnh bìa:</label>
-            <input type="file" onchange="previewImage(event)" class="form-control-file" id="imageFile" name="imageFile" accept="image/*">
+        <div class="login__box my-3">
+            <div class="custom-file-upload">
+                <label for="coverImage">
+                    <span class="btn-upload">Chọn ảnh bìa</span>
+                </label>
+                <input type="file" id="coverImage" onchange="handleImagePreview()" name="coverImage" accept="image/*">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Ảnh bìa xem trước:</label>
-            <br>
-            <img id="coverImagePreview" class="img-thumbnail" style="display:none;" alt="ảnh bìa xem trước" width="200" height="200">
+        <div class="login__box my-3">
+            <label for="coverImagePreview">Xem trước ảnh bìa: </label>
+            <img id="coverImagePreview" class="img-thumbnail d-none" alt="Cover Preview">
         </div>
-
-        <button type="submit" class="btn btn-primary">Tạo playlist</button>
+        <p id="errorMessage" class="error-message d-none text-danger">Vui lòng nhập tên playlist và chọn tệp trước khi nhấn nút thêm!</p>
+        <button type="submit" class="normal__button" id="addButton">Tạo playlist</button>
     </form>
 </div>
 <script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('coverImagePreview');
-            output.src = reader.result;    // Đặt URL ảnh từ nội dung tệp đã đọc
-            output.style.display = 'block';  // Hiển thị element ảnh
-        };
-        reader.readAsDataURL(event.target.files[0]); // Đọc tệp đầu tiên được chọn
+    document.getElementById("addButton").addEventListener("click", function (event) {
+        const fileInput = document.getElementById("coverImage");
+        const InputText = document.getElementById("playlistName");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check if a file is selected
+        if (!fileInput.files || fileInput.files.length === 0||InputText.value.trim() === "") {
+            event.preventDefault(); // Prevent form submission
+            errorMessage.classList.remove("d-none"); // Show the error message
+        } else {
+            errorMessage.classList.add("d-none"); // Hide the error message if valid
+        }
+    });
+    function handleImagePreview() {
+        const fileInput = document.getElementById("coverImage");
+        const previewImage = document.getElementById("coverImagePreview");
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.classList.remove("d-none"); // Show the image preview
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            previewImage.src = "";
+            previewImage.classList.add("d-none"); // Hide the image preview
+        }
     }
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
 </html>
