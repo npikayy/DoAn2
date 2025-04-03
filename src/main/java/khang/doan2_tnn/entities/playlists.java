@@ -22,6 +22,8 @@ public class playlists {
     @Column(columnDefinition = "Date")
     LocalDate createdAt;
     @Column(columnDefinition = "nvarchar(255)")
+    String createdBy;
+    @Column(columnDefinition = "nvarchar(255)")
     String playlistPicUrl;
     Integer totalTracks;
 }

@@ -22,7 +22,6 @@ public class users {
     String role;
     @Column(columnDefinition = "nvarchar(255)")
     String userPicUrl;
-
     @OneToOne(mappedBy = "user")
     private ForgotPassword forgotPassword;
 }

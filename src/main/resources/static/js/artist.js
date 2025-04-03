@@ -7,10 +7,11 @@ function AllArtists() {
     songsList.classList.add('d-none');
     playLists.classList.add('d-none');
     genresList.classList.add('d-none');
-    document.getElementById('artist-songs-title').classList.add('d-none');
+    document.getElementById('playlist-songs').classList.add('d-none');
     $('#playlist-songs').html('')
-    $('#artist-songs-tbody').html('')
-    $('#genre-songs-tbody').html('')
+    $('#artist-songs').html('')
+    $('#genre-songs').html('')
+
 }
 function getAllArtists() {
     $.ajax({
@@ -22,14 +23,14 @@ function getAllArtists() {
             // console.log(data); // Ghi log dữ liệu để kiểm tra
             data.forEach(function (artist) {
                 artistsHtml += `
-                    <div class="card transparent-card no-border shadow-sm mb-5" style="width: 200px; height: 250px; ">
+                    <div class="card transparent-card no-border shadow-sm mb-5" style="width: 280px; height: 250px; ">
                     <div style="">
                             <img src="${artist.artistPicUrl}" alt="Ảnh bìa" class="card-img-top" style="position: relative; width: 100%; height: 250px; object-fit: cover;">
                             <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 10px;" >
                                     <img src="img/play-playlist.png" id="instantPlay-button" onclick="instantPlayButtonArtist('${artist.artistName}')" class="shadow-sm circle-button" style="cursor: pointer;" width="50px" height="50px" alt="play">
                                 </div>
                             <div class="card-body text-center" id="card-title">
-                                <h6 class="card-title text-white" style="cursor: pointer;" onclick="getArtistSongs('${artist.artistName}')">${artist.artistName}</h6>
+                                <h5 class="card-title text-white" style="cursor: pointer;" onclick="getArtistSongs('${artist.artistName}')">${artist.artistName}</h5>
                             </div>
                     </div
                         <table class="table table-bordered transparent-card">
@@ -64,11 +65,13 @@ function instantPlayButtonArtist(artistName) {
     });
 }
 function getArtistSongs(artistName) {
+    scrollToTop();
     songsList.classList.add('d-none');
     playLists.classList.add('d-none');
     artistsList.classList.add('d-none');
     genresList.classList.add('d-none');
-    document.getElementById('artist-songs-title').classList.remove('d-none');
+    document.getElementById('artist-songs').classList.remove('d-none');
+    document.getElementById('playlist-songs').classList.add('d-none');
     const url2 = '/TrangChu/getArtistSongs?artist='+ artistName;
     // get playlist songs
     $.ajax({
@@ -76,20 +79,24 @@ function getArtistSongs(artistName) {
         method: 'GET',
         dataType: 'json', // Đảm bảo nhận dữ liệu JSON
         success: function (playlist) {
-            var index = -1;
+            let index = -1;
+            let songsHtml =
+                `<h4 class="w-100 text-white mb-3">Danh sách bài hát</h4>`;
             playlist.forEach(function (song) {
                 index++;
-                let songHtml = `
-                <tr>
-                    <td><img src="${song.songPicUrl}" alt="${song.songName}" style="width: 100%; height: 50px; object-fit: cover;"></td>
-                    <td class="text-white">${song.songName}</td>
-                    <td class="text-white">${song.artist}</td>
-                    <td>
-                        <button class="btn btn-primary playlist-song rounded-pill" data-index="${index}" data-songpicurl="${song.songPicUrl}" data-artist="${song.artist}" data-url="${song.songUrl}" data-songname="${song.songName}" >Phát</button>
-                    </td>
-                </tr>
+                songsHtml += `
+                <div class="row m-1">
+                        <div class="col" style="width: 230px">
+                            <div class="card transparent-card no-border shadow-sm">
+                                <img src="${song.songPicUrl}" class="card-img-top" alt="Ảnh bìa">
+                                <div class="card-body text-center" id="card-title">
+                                <h6 class="card-title text-white playlist-song" style=" cursor: pointer;" data-index="${index}" data-songid="${song.songId}" data-date="${song.releaseDate}" data-genre="${song.genre}" data-album="${song.album}" data-songpicurl="${song.songPicUrl}" data-artist="${song.artist}" data-url="${song.songUrl}" data-songname="${song.songName}">${song.songName}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 `
-                $('#artist-songs-tbody').append(songHtml);
+                $('#artist-songs').html(songsHtml);
             });
             setupPlaylistButtons(playlist);
 

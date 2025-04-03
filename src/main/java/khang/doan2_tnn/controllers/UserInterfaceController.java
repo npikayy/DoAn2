@@ -1,12 +1,8 @@
 package khang.doan2_tnn.controllers;
 
 import khang.doan2_tnn.entities.*;
-import khang.doan2_tnn.repositories.playlistRepository;
-import khang.doan2_tnn.repositories.artistRepository;
-import khang.doan2_tnn.repositories.playlistsongRepository;
-import khang.doan2_tnn.repositories.songRepository;
-import khang.doan2_tnn.repositories.userRepository;
-import khang.doan2_tnn.repositories.genreRepository;
+import khang.doan2_tnn.repositories.*;
+import khang.doan2_tnn.services.favoriteSongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,6 +32,11 @@ public class UserInterfaceController {
     private artistRepository artistRepository;
     @Autowired
     private genreRepository genreRepository;
+    @Autowired
+    private favoriteSongRepository favoriteSongRepository;
+    @Autowired
+    private favoriteSongService favoriteSongService;
+
     @GetMapping()
     public ModelAndView mainPage(ModelAndView modelAndView) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,7 +49,30 @@ public class UserInterfaceController {
         modelAndView.setViewName("userMusicPages/mainMusicPage");
         return modelAndView;
     }
-
+    @GetMapping("/getFavoriteSongs")
+    public List<songs> getFavoriteSongs(@RequestParam String userId) {
+        List<Long> songIds = favoriteSongRepository.findSongIdByUserId(userId);
+        return songRepository.findAllById(songIds); // Trả về danh sách bài hát đã thêm vào thiết lập yêu thích
+    }
+    @GetMapping("/getFavoriteSongIds")
+    public List<Long> getFavoriteSongIds(@RequestParam String userId) {
+        return favoriteSongRepository.findSongIdByUserId(userId);
+    }
+    @GetMapping("/addFavoriteSong")
+    public String addFavoriteSong(@RequestParam String userId, @RequestParam Long songId) {
+        favoriteSongs favoriteSong = favoriteSongRepository.findByUserIdAndSongId(userId, songId);
+        System.out.println(favoriteSong == null);
+        if (favoriteSong == null) {
+            favoriteSongService.addFavoriteSong(userId, songId);
+        } else {
+            return "0";
+        }
+        return "1";
+    }
+    @GetMapping("/removeFavoriteSong")
+    public void removeFavoriteSong(@RequestParam String userId, @RequestParam Long songId) {
+        favoriteSongService.removeFavoriteSong(userId, songId);
+    }
     @GetMapping("/getAllSongs")
     public List<songs> getAllSongs() {
         return songRepository.findAll(); // Trả về danh sách bài hát
@@ -65,11 +91,73 @@ public class UserInterfaceController {
     }
     @GetMapping("/getAllPlaylists")
     public List<playlists> getAllPlaylists() {
-        return playlistRepository.findAll(); // Trả về danh sách playlist
+        return playlistRepository.findByCreatedBy(); // Trả về danh sách playlist
     }
     @GetMapping("/getPlaylistById")
     public playlists getPlaylistById(@RequestParam String playlistId) {
         return playlistRepository.findById(playlistId).get(); // Trả về playlist theo id
+    }
+    @GetMapping("/getPlaylistByUserId")
+    public List<playlists> getPlaylistsByUserId(@RequestParam String userId) {
+        return playlistRepository.findByUserId(userId); // Trả về playlist theo id
+    }
+    @GetMapping("/getPlaylistByUserIdAndSongId")
+    public List<playlists> getPlaylistsByUserIdAndSongId(@RequestParam String userId, @RequestParam Long songId) {
+        // Lấy tất cả playlists của userId
+        List<playlists> playlists = playlistRepository.findByUserId(userId);
+
+        // Lọc ra danh sách playlists không chứa bài hát với songId
+        List<playlists> filteredPlaylists = new ArrayList<>();
+        for (playlists playlist : playlists) {
+            List<Long> songIds = playlistsongRepository.findSongIdByPlaylistId(playlist.getPlaylistId());
+            if (!songIds.contains(songId)) { // Nếu playlist không chứa songId
+                filteredPlaylists.add(playlist); // Thêm vào danh sách kết quả
+            }
+        }
+        return filteredPlaylists; // Trả về danh sách đã lọc
+    }
+    @GetMapping("/createPlaylist")
+    public String createPlaylist(@RequestParam String userId) {
+            // Đếm số lượng danh sách phát hiện có của người dùng
+            long count = playlistRepository.countByUserId(userId);
+            // Tạo tên mặc định theo thứ tự
+            String playlistName = "Danh sách phát " + (count + 1);
+        String creator = userRepository.findByUserId(userId).getRole();
+        // Tạo danh sách phát mới
+        playlists playlist = playlists.builder()
+                .playlistName(playlistName)
+                .userId(userId)
+                .playlistPicUrl("/img/PlaylistDefaultAvatar.png")
+                .createdAt(LocalDate.now())
+                .createdBy(creator)
+                .totalTracks(0)
+                .build();
+        playlistRepository.save(playlist);
+        return "1"; // Trả về thành công
+    }
+    @GetMapping("/deletePlaylist")
+    public String deletePlaylist(@RequestParam String playlistId) {
+        playlistRepository.deleteById(playlistId); // Xóa playlist
+        return "1"; // Trả về thành công
+    }
+    @GetMapping("/addSongToPlaylist")
+    public String addSongToPlaylist(@RequestParam String playlistId, @RequestParam Long songId) {
+        playlistSongs playlistsong = playlistsongRepository.findByPlaylistIdAndSongId(playlistId, songId);
+        if (playlistsong == null) {
+            playlistsongRepository.save(playlistsong.builder().playlistId(playlistId).songId(songId).build());
+            playlists playlist = playlistRepository.findById(playlistId).get();
+            playlist.setTotalTracks(playlist.getTotalTracks() + 1);
+            playlistRepository.save(playlist);
+        }
+        return "1"; // Trả về thành công
+    }
+    @GetMapping("/removeSongFromPlaylist")
+    public String removeSongFromPlaylist(@RequestParam String playlistId, @RequestParam Long songId) {
+        playlistsongRepository.deleteByPlaylistIdAndSongId(playlistId, songId);
+        playlists playlist = playlistRepository.findById(playlistId).get();
+        playlist.setTotalTracks(playlist.getTotalTracks() - 1);
+        playlistRepository.save(playlist);
+        return "1"; // Trả về thành công
     }
     @GetMapping("/getPlaylistSongs")
     public List<songs> getPlaylistSongs(@RequestParam String playlistId) {

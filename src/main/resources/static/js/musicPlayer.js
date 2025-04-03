@@ -2,6 +2,32 @@
 window.onload = function () {
     getEverything()
 };
+
+function toggleTextColorOnActive() {
+    // Lấy tất cả các phần tử có class 'nav-link'
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Lặp qua từng phần tử
+    navLinks.forEach(link => {
+        if (link.classList.contains('active')) {
+            // Nếu có class 'active', thay đổi từ 'text-white' thành 'text-dark'
+            link.classList.remove('text-white');
+            link.classList.add('text-dark');
+        } else {
+            // Nếu không có class 'active', đảm bảo class 'text-white' được áp dụng
+            link.classList.remove('text-dark');
+            link.classList.add('text-white');
+        }
+    });
+}
+function redirectToLogin() {
+    window.location.href = "/login";
+}
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        toggleTextColorOnActive(); // Gọi hàm kiểm tra class active
+    });
+});
 function getAll() {
     if (songsList.classList.contains('d-none')){
         songsList.classList.remove('d-none')
@@ -15,22 +41,64 @@ function getAll() {
     if (genresList.classList.contains('d-none')){
         genresList.classList.remove('d-none')
     }
+    document.getElementById('playlist-songs').classList.add('d-none');
     $('#playlist-songs').html('');
-    $('#artist-songs-tbody').html('')
-    $('#genre-songs-tbody').html('')
+    $('#artist-songs').html('')
+    $('#genre-songs').html('')
 }
 function getEverything() {
     getAllSongs();
     getAllPlaylists();
     getAllArtists();
     getAllGenres()
+    document.getElementById('playlist-songs').classList.add('d-none');
     const savedSongUrl = localStorage.getItem("currentSongUrl");
     const savedTime = localStorage.getItem("currentTime");
     const savedSongName = localStorage.getItem("currentSongName");
     const savedArtistName = localStorage.getItem("artistName");
     const savedSongPicUrl = localStorage.getItem("songPicUrl");
+    const savedGenre = localStorage.getItem("genre");
+    const savedAlbum = localStorage.getItem("album");
+    const savedReleaseDate = localStorage.getItem("releaseDate");
     const savedVolume = localStorage.getItem("volume");
     const isLooping = localStorage.getItem('loop') === 'true';
+    const songId = localStorage.getItem("songId");
+    const userId = $('#favorite-button').data('userid'); // ID người dùng
+    $('#favorite-button').off('click').on('click', function () {
+        let url1 = '/TrangChu/addFavoriteSong?userId=' + userId + '&songId=' + songId;
+        let url2 = '/TrangChu/removeFavoriteSong?userId=' + userId + '&songId=' + songId;
+
+        $.ajax({
+            url: url1,
+            method: 'Get',
+            success: function (data) {
+                if (data == '1') {
+                    favoriteSongBtn.src = 'img/favorited.png'; // Đổi hình ảnh sang trạng thái yêu thích
+                    $('#favorite-songs').html("")
+                    getAllFavoriteSongs();
+                } else {
+                    favoriteSongBtn.src = 'img/notFavorited.png';
+                    $.ajax({
+                        url: url2,
+                        method: 'Get',
+                        success: function () {
+                            $('#favorite-songs').html("")
+                            getAllFavoriteSongs();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Lỗi khi xóa bài hát:', xhr.responseText || status, error);
+                        }
+                    });
+                }
+
+                // Gọi hàm getAllFavoriteSongs() để làm mới danh sách yêu thích
+
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi khi thêm bài hát vào danh sách yêu thích:', xhr.responseText || status, error);
+            }
+        });
+    });
     if (savedSongUrl) {
         // Cập nhật trình phát nhạc
         audioPlayer.src = savedSongUrl;
@@ -49,15 +117,22 @@ function getEverything() {
             loopImg.alt = 'loop on';
             loopImg.classList.add('activated');
         }
+        if ($('#favorite-button')!=null){
+            let url = '/TrangChu/getFavoriteSongIds?userId='+userId
+            $.ajax({
+                url: url,
+                method: 'Get',
+                success: function (data) {
+                    if (data.includes(Number(songId))) {
+                        favoriteSongBtn.src = 'img/favorited.png'; // Đổi hình ảnh sang nút yêu thích
+                    }else{
+                        favoriteSongBtn.src = 'img/notFavorited.png';
+                    }
+                }
+            });
+        }
         // Cập nhật giao diện
-        document.getElementById("song-info").innerHTML = `
-            <img src="${savedSongPicUrl}" alt="${savedSongName}" class="rounded-circle me-2" width="60" height="60">
-            <div style="height: 100px; padding-top: 10px;" >
-                <h7 style="color: #ffffff; height: 100px;">${savedSongName}</h7>
-                <p style="color: #e7e7e7;">${savedArtistName}</p>
-            </div>
-            <img src="img/notFavorited.png" alt="comment" class="mb-2" width="35px" height="35px">
-        `;
+        updateSongInfo(songId,savedSongPicUrl, savedSongName, savedArtistName, savedGenre, savedAlbum, savedReleaseDate)
 
         // Phát nhạc hoặc để ở trạng thái tạm dừng
     }
@@ -67,11 +142,15 @@ function getEverything() {
 audioPlayer.addEventListener("timeupdate", () => {
     const volumeBar = document.getElementById('volume-bar');
     const songInfo = $('#song-info'); // Chọn phần tử #song-info
+    localStorage.setItem("songId", songInfo.find('h6').data('songid'))
     localStorage.setItem("currentSongUrl", audioPlayer.src); // Lưu URL bài hát
     localStorage.setItem("currentTime", audioPlayer.currentTime); // Lưu thời gian phát hiện tại
-    localStorage.setItem("currentSongName",songInfo.find('h7').text()); // Lưu tên bài hát
+    localStorage.setItem("currentSongName",songInfo.find('h6').text()); // Lưu tên bài hát
     localStorage.setItem("artistName",songInfo.find('p').text()); // Lưu tên ca sĩ
     localStorage.setItem("songPicUrl", songInfo.find('img').attr('src')); // Lưu URL hình ảnh bài hát
+    localStorage.setItem("genre",songInfo.find('h6').data('genre'))
+    localStorage.setItem("album",songInfo.find('h6').data('album'))
+    localStorage.setItem("releaseDate",songInfo.find('h6').data('date'))
     localStorage.setItem("volume", audioPlayer.volume); // Lưu âm lượng
     if (audioPlayer.ended) {
         const isLooping = localStorage.getItem('loop')=== 'true'

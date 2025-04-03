@@ -17,4 +17,12 @@ public interface playlistsongRepository extends JpaRepository<playlistSongs, Lon
 
     @Query("SELECT ps.playlistId FROM playlistSongs ps WHERE ps.songId = :songId")
     List<String> findPlaylistIDBySongId(Long songId);
+
+    @Query("SELECT ps FROM playlistSongs ps WHERE ps.songId = :songId AND ps.playlistId = :playlistId")
+    playlistSongs findByPlaylistIdAndSongId(String playlistId, Long songId);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM playlistSongs ps WHERE ps.playlistId = :playlistId AND ps.songId = :songId")
+    void deleteByPlaylistIdAndSongId(String playlistId, long songId);
 }

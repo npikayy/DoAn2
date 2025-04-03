@@ -7,10 +7,12 @@ function AllGenres() {
     songsList.classList.add('d-none');
     playLists.classList.add('d-none');
     artistsList.classList.add('d-none');
-    document.getElementById('artist-songs-title').classList.add('d-none');
+    document.getElementById('artist-songs').classList.add('d-none');
+    document.getElementById('playlist-songs').classList.add('d-none');
     $('#playlist-songs').html('')
-    $('#artist-songs-tbody').html('')
-    $('#genre-songs-tbody').html('')
+    $('#artist-songs').html('')
+    $('#genre-songs').html('')
+
 }
 function getRandomRGBColor() {
     const r = Math.floor(Math.random() * 256);
@@ -58,11 +60,13 @@ function getAllGenres() {
     });
 }
 function getGenreSongs(genreName) {
+    scrollToTop();
     songsList.classList.add('d-none');
     playLists.classList.add('d-none');
     artistsList.classList.add('d-none');
+    document.getElementById('artist-songs').classList.add('d-none');
+    document.getElementById('playlist-songs').classList.add('d-none');
     genresList.classList.add('d-none');
-    document.getElementById('artist-songs-title').classList.remove('d-none');
     // get playlist songs
     const url2 = '/TrangChu/getGenreSongs?genre='+ genreName;
     $.ajax({
@@ -70,21 +74,24 @@ function getGenreSongs(genreName) {
         method: 'GET',
         dataType: 'json', // Đảm bảo nhận dữ liệu JSON
         success: function (playlist) {
-            var index = -1;
+            let index = -1;
+            let songsHtml =
+                `<h4 class="w-100 text-white mb-3">Danh sách bài hát</h4>`;
             playlist.forEach(function (song) {
                 index++;
-                let songHtml = `    
-                <tr>
-                    <td><img src="${song.songPicUrl}" alt="${song.songName}" style="width: 100%; height: 50px; object-fit: cover;"></td>
-                    <td class="text-white">${song.songName}</td>
-                    <td class="text-white">${song.artist}</td>
-                    <td class="text-white">${song.genre}</td>
-                    <td>
-                        <button class="btn btn-primary playlist-song rounded-pill" data-index="${index}" data-songpicurl="${song.songPicUrl}" data-artist="${song.artist}" data-url="${song.songUrl}" data-songname="${song.songName}" >Phát</button>
-                    </td>
-                </tr>
+                songsHtml += `
+                <div class="row m-1">
+                        <div class="col" style="width: 230px">
+                            <div class="card transparent-card no-border shadow-sm">
+                                <img src="${song.songPicUrl}" class="card-img-top" alt="Ảnh bìa">
+                                <div class="card-body text-center" id="card-title">
+                                <h6 class="card-title text-white playlist-song" style=" cursor: pointer;" data-index="${index}" data-songid="${song.songId}" data-date="${song.releaseDate}" data-genre="${song.genre}" data-album="${song.album}" data-songpicurl="${song.songPicUrl}" data-artist="${song.artist}" data-url="${song.songUrl}" data-songname="${song.songName}">${song.songName}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 `
-                $('#genre-songs-tbody').append(songHtml);
+                $('#genre-songs').html(songsHtml);
                 // document.getElementById('artist-songs-tbody').innerHTML = `songHtml`;
             });
 

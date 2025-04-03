@@ -36,6 +36,7 @@ html body{
     /*background-color: #969696;*/
 }
 #aside {
+    background-color: #cecece;
     width: auto;
 }
 .user-info-section{
@@ -101,8 +102,13 @@ header {
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Thêm bóng đổ */
 }
-
-#card-title:hover,#instantPlay-button:hover,#play-pause-button:hover,#shuffle-button:hover,#loop-button:hover,#prev-button:hover,#next-button:hover,#volume-button:hover {
+.text-ellipsis {
+    white-space: nowrap; /* Không cho xuống dòng */
+    overflow: hidden; /* Ẩn phần vượt quá vùng hiển thị */
+    text-overflow: ellipsis; /* Thêm "…" khi bị cắt */
+    width: 200px; /* Đặt chiều rộng cố định */
+}
+#favorite-button:hover,#card-title:hover,#instantPlay-button:hover,#play-pause-button:hover,#shuffle-button:hover,#loop-button:hover,#prev-button:hover,#next-button:hover,#volume-button:hover {
     cursor: pointer;
     transform: scale(1.1); /* Phóng to nhẹ khi hover */
     transition: transform 0.2s ease-in-out;
@@ -148,6 +154,12 @@ header {
 }
 #search-results div:last-child {
     border-bottom: none; /* Bỏ đường viền mục cuối cùng */
+}
+.delete-icon {
+    filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(500%) hue-rotate(316deg) brightness(100%);
+}
+.delete-icon:hover {
+    filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(500%) hue-rotate(345deg) brightness(100%);
 }
 
 

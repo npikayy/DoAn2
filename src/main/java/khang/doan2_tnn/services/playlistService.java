@@ -2,8 +2,10 @@ package khang.doan2_tnn.services;
 
 import khang.doan2_tnn.entities.playlistSongs;
 import khang.doan2_tnn.entities.playlists;
+import khang.doan2_tnn.entities.users;
 import khang.doan2_tnn.repositories.playlistRepository;
 import khang.doan2_tnn.repositories.playlistsongRepository;
+import khang.doan2_tnn.repositories.userRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,8 @@ public class playlistService {
     private playlistRepository playlistRepository;
     @Autowired
     private playlistsongRepository playlistsongRepository;
+    @Autowired
+    private userRepository userRepository;
 
     public List<playlists> getPlaylists() {
         return playlistRepository.findAll();
@@ -59,13 +63,14 @@ public class playlistService {
             try (FileOutputStream fos = new FileOutputStream(picFile)) {
                 fos.write(imageFile.getBytes());
             }
-
+            String creator = userRepository.findByUserId(userId).getRole();
             // Create playlist entity
             playlists playlist = playlists.builder()
                     .playlistName(playlistName)
                     .userId(userId)
                     .playlistPicUrl("/playlistPics/" + picFile.getName()) // Store final file name
                     .createdAt(LocalDate.now())
+                    .createdBy(creator)
                     .totalTracks(0)
                     .build();
 

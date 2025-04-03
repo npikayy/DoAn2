@@ -17,15 +17,13 @@
         <img src="img/LogoTNN.png" alt="Logo" class="rounded-circle me-2" width="60" height="60">
     </div>
     <div class="d-flex w-50 ms-5 position-relative">
-        <form class="d-flex align-items-center gap-3 w-100">
-            <input type="text" id="search-input" class="form-control rounded-pill me-2 w-100" placeholder="Tìm kiếm bài hát">
-        </form>
+        <input type="text" id="search-input" class="form-control rounded-pill me-2 w-100" placeholder="Tìm kiếm bài hát">
         <div id="search-results" class="mt-2 position-absolute w-100 d-none"></div>
     </div>
     <div th:if="${user}" class="d-flex user-info-section align-items-center">
         <img th:src="${user.userPicUrl}" alt="User" class="rounded-circle me-2" width="40" height="40">
         <h5 th:text="${user.fullName}" class="m-1" style="color: #423F3F;"></h5>
-        <a href="#" class="btn btn-outline-secondary rounded-pill me-2" onclick="confirmAction()">Đăng xuất</a>
+        <a href="#" class="btn btn-outline-light text-dark rounded-pill me-2" onclick="confirmAction()">Đăng xuất</a>
     </div>
     <div th:unless="${user}" class="d-flex justify-content-end user-info-section">
             <div class="me-3" >
@@ -52,16 +50,16 @@
     </div>
 </div>
 <!-- Content -->
-<div class="d-flex gap-2 mt-3">
-    <aside id="aside" class="col-md-3 p-3 border-end border-top border-3 border-white rounded-end-3">
-        <h2 class="text-white">
-            Thư viện
-        </h2>
-            <ul class="list-group">
-                <li class="list-group-item">Danh sách phát #1</li>
-                <li class="list-group-item">Danh sách phát #2</li>
-                <li class="list-group-item">Danh sách phát #3</li>
-            </ul>
+<div class="d-flex gap-1 mt-1">
+    <aside id="aside" class="col-md-3 p-3 border-end border-top border-3 border-white rounded-end-3" style="width: 345px;">
+        <h2 class="text-dark">Thư viện</h2>
+        <h4 th:unless="${user}" class="text-danger">Vui lòng <a class="text-dark" href="/login">đăng nhập</a> để xem thư viện của bạn <i class="ri-error-warning-line"></i></h4>
+        <h4 th:if="${user}" class="btn btn-light" onclick="togglePlaylists()">Danh sách phát của tôi</h4>
+        <h4 class="btn btn-light rounded-3" th:if="${user}"><img onclick="createPlaylist()" style="cursor: pointer;" src="img/add-list.png" alt="playlist" width="35px" height="35px"></h4>
+            <ul class="mt-1 list-group" id="my-playlist"></ul>
+        <h4 th:if="${user}" data-bs-toggle="collapse"
+            data-bs-target="#favorite-songs" class="btn btn-light mt-3">Danh sách bài hát yêu thích <img src="img/favorited.png" alt="heart" width="35px" height="35px"></h4>
+        <div id="favorite-songs" class="collapse"></div>
     </aside>
         <!-- Main Content -->
         <section id="main-content" class="border-start border-top border-3 border-white rounded-start-3">
@@ -70,34 +68,25 @@
                     <button class="nav-link text-dark active" id="all-tab" data-bs-toggle="tab" onclick="getAll()">Tất cả</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-dark" id="songs-tab" data-bs-toggle="tab" onclick="AllSongs()">Bài hát</button>
+                    <button class="nav-link text-white" id="songs-tab" data-bs-toggle="tab" onclick="AllSongs()">Bài hát</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-dark" id="playlists-tab" data-bs-toggle="tab" onclick="AllPlaylists()">Playlist</button>
+                    <button class="nav-link text-white" id="playlists-tab" data-bs-toggle="tab" onclick="AllPlaylists()">Playlist</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-dark" id="artists-tab"  data-bs-toggle="tab" onclick="AllArtists()">Nghệ sĩ</button>
+                    <button class="nav-link text-white" id="artists-tab" data-bs-toggle="tab" onclick="AllArtists()">Nghệ sĩ</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link text-dark" id="genres-tab" data-bs-toggle="tab" onclick="AllGenres()">Thể loại</button>
+                    <button class="nav-link text-white" id="genres-tab" data-bs-toggle="tab" onclick="AllGenres()">Thể loại</button>
                 </li>
             </div>
             <div id="songs-list" class="d-flex flex-wrap m-4"></div>
             <div id="playlists-list" class="d-flex flex-wrap gap-3 mb-4"></div>
-            <div id="playlist-songs" class="d-flex flex-wrap gap-3"></div>
+            <div id="playlist-songs" class="d-flex flex-wrap border bg-dark border-3 border-white rounded-3 pt-3" style="height: 100%;"></div>
             <div id="artists-list" class="d-flex flex-wrap gap-3 mb-4"></div>
-            <div id="artist-songs" class="d-flex flex-wrap gap-3">
-                <table class="table table-bordered transparent-card">
-                    <h4 class="w-100 text-white my-1 d-none" id="artist-songs-title">Danh sách bài hát</h4>
-                    <tbody id="artist-songs-tbody"></tbody>
-                </table>
-            </div>
+            <div id="artist-songs" class="d-flex flex-wrap m-4"></div>
             <div id="genres-list" class="d-flex flex-wrap gap-3"></div>
-            <div id="genre-songs" class="d-flex flex-wrap gap-3">
-                <table class="table table-bordered transparent-card">
-                    <h4 class="w-100 text-white my-1 d-none" id="artist-songs-title">Danh sách bài hát</h4>
-                    <tbody id="genre-songs-tbody"></tbody>
-                </table>
+            <div id="genre-songs" class="d-flex flex-wrap m-4">
             </div>
         </section>
 </div>
@@ -113,15 +102,20 @@
         <div class="controls d-flex align-items-center justify-content-space-between gap-5">
             <div id="song-info" class="d-flex align-items-center gap-3 mt-1" style="width: 300px;">
                 <img src="img/LogoTNN.png" alt="Logo" class="rounded-circle me-2" width="60" height="60">
-                <div>
-                    <h7 style="color: #ffffff; height: 100px;">Tên bài hát</h7>
+                <div class="mt-3">
+                    <h7 style="color: #ffffff;">Tên bài hát</h7>
                     <p>Tên ca sĩ</p>
                 </div>
-                <img src="img/notFavorited.png" alt="comment" class="mb-2" width="35px" height="35px">
+                <img th:if="${user}" style="cursor: pointer;" th:data-userId="${user.userId}"
+                id="favorite-button" src="img/notFavorited.png" alt="favorite" class="ms-1" width="35px" height="35px">
+
+                <img th:unless="${user}" onclick="redirectToLogin()" style="cursor: pointer;"
+                id="favorite" src="img/notFavorited.png" alt="favorite" width="35px" height="35px">
+                <img th:if="${user}" style="filter: invert(1); cursor: pointer;" onclick="showMyPlaylistToAddSong()"
+                id="add-to-playlist-button" src="img/add-to-playlist.png" alt="addtoplaylist" class="ms-1" width="35px" height="35px">
             </div>
             <div class="d-flex flex-column justify-content-center m-auto" style=" width: 50%;">
                 <div id="buttons" class="d-flex align-items-center m-auto gap-3" style="">
-<!--                    <img src="img/information.png" style=" cursor: pointer;" width="35px" height="35px" alt="information">-->
                     <img src="img/shuffle.png" id="shuffle-button" style="filter: invert(1); cursor: pointer;" width="35px" height="35px" alt="shuffle">
                     <img src="img/previous.png" id="prev-button" style="filter: invert(1);  cursor: pointer;" width="30px" height="30px" alt="previous">
                     <img src="img/play-button.png" id="play-pause-button" style="filter: invert(1); cursor: pointer;" width="40px" height="40px" alt="play">
